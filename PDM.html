@@ -554,7 +554,13 @@ p input[type="text"] {
         document.getElementById('client-RFM').value = 'VIP Client'; // Exemple de statut client
         document.getElementById('client-offre').value = 'Gagnez 10 points de fidélité pour chaque achat de plus de 50€	'; // Exemple de statut client
 
+// Afficher la zone login
+document.getElementById('user-info').style.display = 'block';
 
+// Personnaliser dynamiquement le texte du login
+document.getElementById('login-text').textContent = 'Profil chargé :';
+document.getElementById('login-name').textContent = `${client.firstName} ${client.lastName}`;
+document.getElementById('login-company').textContent = client.company || "IMAGINO CACHAN";
         // Process store transactions
         const storeTransactions = client['5_dernieres_transactions_magasin'];
         const storeTransactionsList = document.getElementById('store-transactions');
