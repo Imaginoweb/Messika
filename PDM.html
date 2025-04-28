@@ -372,7 +372,7 @@ p input[type="text"] {
         <p style="margin-right: 10px;">IMAGINO CACHAN</p>
       </div>
              <!-- MODIFIER URL IMAGE CENTRAL BARRE RECHERCHER -->
-      <img src="https://www.auberi.fr//img/m/9.jpg" alt="Logo PDM" class="logo"> 
+      <img src="https://cdn.jaimelesstartups.fr/wp-content/uploads/2020/10/Logo%20de%20la%20startup%20imagino.png" alt="Logo PDM" class="logo"> 
 
       <div style="display: flex; align-items: center;">
         <input type="text" id="emailInput" placeholder="Enter email">
@@ -415,9 +415,7 @@ p input[type="text"] {
           <div id="comment-textarea">
             <textarea id="comment" placeholder="Enter your comment"></textarea>
             <button id="submitCommentButton">Submit Comment</button>
-          </div>
-        </div>
-        <!-- Section Derniers Rendez-vous -->
+          </div><!-- Section Derniers Rendez-vous -->
 <div id="appointments-section" style="display: none; width: 100%; margin-top: 20px;">
   <h2 style="color: #d4af37;">Derniers Rendez-vous</h2>
   <ul id="appointments-list" class="transaction-list"></ul>
@@ -428,9 +426,12 @@ p input[type="text"] {
   <h2 style="color: #d4af37;">Wishlist</h2>
   <img id="wishlist-product" src="https://www.messika.com/media/opti_image/webp/catalog/product/cache/eef15cb09c727458d16c80be309d91bd/m/e/messika_paris_-_collier_move_cisel_vue_2_14667_w.webp" alt="Produit Wishlist" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin-top: 10px;">
 </div>
+        </div>          
       </div>
-    </div>
+
   </div>
+    </div>
+
 
   <!-- Pop-in de confirmation -->
   <div class="overlay" id="overlay"></div>
@@ -843,6 +844,26 @@ p input[type="text"] {
         alert('Error creating contact.');
       }
     });
+
+    // === Derniers rendez-vous ===
+// Simulation de 3 derniers rendez-vous
+const appointments = [
+  { date: "2025-04-20", location: "Boutique Paris Champs-Élysées" },
+  { date: "2025-03-15", location: "Messika Flagship Store" },
+  { date: "2025-02-05", location: "Salon du Luxe Cannes" }
+];
+
+const appointmentsList = document.getElementById('appointments-list');
+appointmentsList.innerHTML = '';
+appointments.forEach(appointment => {
+  const li = document.createElement('li');
+  li.textContent = `${appointment.date} - ${appointment.location}`;
+  appointmentsList.appendChild(li);
+});
+
+// Afficher les sections
+document.getElementById('appointments-section').style.display = 'block';
+document.getElementById('wishlist-section').style.display = 'block';
 
     // Ajout des boutons Check-in pour les transactions d'aujourd'hui
     function addCheckinButtons() {
