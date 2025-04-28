@@ -361,18 +361,18 @@ p input[type="text"] {
 }
   </style>
                <!-- MODIFIER URL IMAGE ICONE NAVIGATEUR -->
-  <link rel="icon" href="https://www.auberi.fr//img/m/9.jpg" type="image/gif" />
+  <link rel="icon" href="https://imagino.com/wp-content/uploads/2023/11/cdp-marketing-solutions-imagino.png" type="image/gif" />
 </head>
 <body>
   <div class="ipad-frame">
     <div class="content">
-<div class="user-info" id="user-info" style="display: none;">
-  <p id="login-text" style="margin-right: 10px; font-weight: bold;">Logged in as</p>
-  <p id="login-name" style="margin-right: 10px;"></p>
-  <p id="login-company" style="margin-right: 10px;"></p>
-</div>
+      <div class="user-info">
+        <p style="margin-right: 10px; font-weight: bold;">Logged in as</p>
+        <p style="margin-right: 10px;">Mathilde PITIOT</p>
+        <p style="margin-right: 10px;">IMAGINO CACHAN</p>
+      </div>
              <!-- MODIFIER URL IMAGE CENTRAL BARRE RECHERCHER -->
-      <img src="https://www.auberi.fr//img/m/9.jpg" alt="Logo PDM" class="logo"> 
+      <img src="https://cdn.jaimelesstartups.fr/wp-content/uploads/2020/10/Logo%20de%20la%20startup%20imagino.png" alt="Logo PDM" class="logo"> 
 
       <div style="display: flex; align-items: center;">
         <input type="text" id="emailInput" placeholder="Enter email">
@@ -394,7 +394,7 @@ p input[type="text"] {
             <p><strong>Status fidélité:</strong> <input type="text" id="client-status" class="editable non-editable" readonly></p>
             <p><strong>Nombre de points :</strong><input type="text" id="client-seller" class="editable non-editable" readonly></p>
             <p><strong>Classification client :</strong><input type="text" id="client-RFM" class="editable non-editable" readonly></p>
-            <p><strong>Offre éligible :</strong><input type="text" class="editable non-editable" readonly>Linda BIRKLE</p>
+            <p><strong>Offre éligible :</strong><input type="text" id="client-offre" class="editable non-editable" readonly></p>
             <button id="save-button">Update contact details</button>
             <div id="transactions">
               <h2>Historique d'achat</h2>
@@ -554,13 +554,7 @@ p input[type="text"] {
         document.getElementById('client-RFM').value = 'VIP Client'; // Exemple de statut client
         document.getElementById('client-offre').value = 'Gagnez 10 points de fidélité pour chaque achat de plus de 50€	'; // Exemple de statut client
 
-// Afficher la zone login
-document.getElementById('user-info').style.display = 'block';
 
-// Personnaliser dynamiquement le texte du login
-document.getElementById('login-text').textContent = 'Profil chargé :';
-document.getElementById('login-name').textContent = `${client.firstName} ${client.lastName}`;
-document.getElementById('login-company').textContent = client.company || "IMAGINO CACHAN";
         // Process store transactions
         const storeTransactions = client['5_dernieres_transactions_magasin'];
         const storeTransactionsList = document.getElementById('store-transactions');
