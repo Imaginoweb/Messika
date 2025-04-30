@@ -388,7 +388,8 @@ p input[type="text"] {
 </h2>
 <p><strong>First Name:</strong> <input class="editable non-editable" id="client-firstname" readonly="" type="text"/></p>
 <p><strong>Last Name:</strong> <input class="editable non-editable" id="client-lastname" readonly="" type="text"/></p>
-<p><strong>Email:</strong> <input class="editable non-editable" id="client-email" readonly="" type="text"/></p>
+<p>Email: <input id="new-email" type="text"/></p>
+<p>Téléphone: <input id="new-phone" type="text"/></p>
 <p><strong>Opt-In Email:</strong> <input class="editable non-editable" id="client-optin" readonly="" type="text"/></p>
 <!-- MODIFIER LABELS DES FAKE COLONNES-->
 <p><strong>Status fidélité:</strong> <input class="editable non-editable" id="client-status" readonly="" type="text"/></p>
@@ -805,6 +806,7 @@ p input[type="text"] {
       const firstName = document.getElementById('new-firstname').value;
       const lastName = document.getElementById('new-lastname').value;
       const email = document.getElementById('new-email').value;
+const telephone = document.getElementById('new-phone').value;
 
      
       let url = `https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO`;
@@ -816,11 +818,13 @@ p input[type="text"] {
             "Content-Type": "application/json",
             "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
           },
-          body: JSON.stringify({
-            email: email,
-            firstName: firstName,
-            lastName: lastName
-          })
+        body: JSON.stringify({
+  email: email,
+  firstName: firstName,
+  lastName: lastName,
+  telephone: telephone
+})
+
         });
 
         if (response.ok) {
