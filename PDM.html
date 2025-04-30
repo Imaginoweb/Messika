@@ -474,7 +474,7 @@ p input[type="text"] {
     });
 /* MODIFIER FONCTION DE RECHERCHE : ADAPATER URL DE ENDPOINT API + API KEY */
     async function fetchRecords(email) {
-      let url = https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email};
+      let url = 'https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email}';
   
 
       try {
@@ -515,7 +515,7 @@ p input[type="text"] {
     }
 
     async function fetchClientDetails(email) {
-      let url = https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}; // remplacer endpoint API
+      let url = 'https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}'; // remplacer endpoint API
 
       try {
         const response = await fetch(url, {
@@ -635,7 +635,7 @@ p input[type="text"] {
       const firstName = document.getElementById('client-firstname').value;
       const lastName = document.getElementById('client-lastname').value;
 
-      let url = https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO;
+      let url = 'https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO';
 
       try {
         const response = await fetch(url, {
@@ -807,7 +807,7 @@ p input[type="text"] {
       const email = document.getElementById('new-email').value;
 
      
-      let url = https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO;
+      let url = 'https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO';
 
       try {
         const response = await fetch(url, {
