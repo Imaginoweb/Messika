@@ -881,6 +881,8 @@ fetch('https://retaildemo1.poc.imagino.com/ucdapi/Creation_compte/1/creationDeCo
       // on ferme la pop-in
       document.getElementById('contact-pop-in').style.display   = 'none';
       document.getElementById('contact-overlay').style.display = 'none';
+      alert('Compte créé !');
+
     } else {
       const text = await response.text();
       alert('Échec création contact: ' + text);
