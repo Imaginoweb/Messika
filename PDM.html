@@ -468,103 +468,470 @@ p input[type="text"] {
 <button class="confirm" id="confirm-checkin-button">Oui</button>
 <button class="cancel" id="cancel-checkin-button">Non</button>
 </div>
-
 <script>
-/* === Configuration === */
-const proxyBase = "https://rough-cloud-09a3.francois-imagino.workers.dev/proxy";
-let allClients = []; // cache de tous les profils
+    document.getElementById('emailInput').addEventListener('input', function() {
+      const email = this.value;
+      if (email.length > 0) {
+        fetchRecords(email);
+      } else {
+        clearSuggestions();
+        document.querySelector('.details-comment-container').style.display = 'none'; // Masquer le conteneur des détails et des commentaires
+      }
+    });
+/* MODIFIER FONCTION DE RECHERCHE : ADAPATER URL DE ENDPOINT API + API KEY */
+    async function fetchRecords(email) {
+      let url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email}`;
+  
 
-/* === Chargement des contacts en masse une seule fois === */
-async function loadAllClients() {
-  if (allClients.length) return allClients; // déjà chargé
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // API KEY
+          }
+        });
+        const data = await response.json();
+        if (data.data && data.data.length > 0) { // Chiffre = nombre de lettre à partir duquel la recherche est faite
+          displaySuggestions(data.data);
+        } else {
+          clearSuggestions();
+          document.querySelector('.details-comment-container').style.display = 'none'; // Masquer le conteneur des détails et des commentaires
+        }
+      } catch (error) {
+        console.error('Error fetching records:', error);
+        clearSuggestions();
+        document.querySelector('.details-comment-container').style.display = 'none'; // Masquer le conteneur des détails et des commentaires
+      }
+    }
+
+    function displaySuggestions(records) {
+      const suggestions = document.getElementById('suggestions');
+      suggestions.innerHTML = '';
+      records.forEach(record => {
+        const div = document.createElement('div');
+        div.textContent = `${record.firstName} ${record.lastName} - ${record.email}`;
+        div.addEventListener('click', () => {
+          fetchClientDetails(record.email);
+          document.getElementById('emailInput').value = record.email;
+          clearSuggestions();
+        });
+        suggestions.appendChild(div);
+      });
+    }
+
+    async function fetchClientDetails(email) {
+      let url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}`; // remplacer endpoint API
+
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            // API KEY
+          }
+        });
+        const data = await response.json();
+        processClientDetails(data);
+      } catch (error) {
+        console.error('Error fetching client details:', error);
+        document.querySelector('.details-comment-container').style.display = 'none'; // Masquer le conteneur des détails et des commentaires
+      }
+    }
+
+    function processClientDetails(data) {
+      if (data && data.data && data.data.length > 0) {
+        const client = data.data[0];
+        document.querySelector('.details-comment-container').style.display = 'flex'; // Afficher le conteneur des détails et des commentaires
+        document.getElementById('client-firstname').value = client.firstName;
+        document.getElementById('client-lastname').value = client.lastName;
+        document.getElementById('client-email').value = client.email;
+
+        document.getElementById('client-telephone').value = client.telephone;
+        document.getElementById('client-optin').value = 'True'; // Remplacer par client.optInEmail si disponible
+        document.getElementById('client-status').value = 'Gold'; // Exemple de statut
+        document.getElementById('client-seller').value = '27/04/1996'; // Exemple de nom du chien
+        document.getElementById('client-RFM').value = 'VIP Client'; // Exemple de statut client
+        document.getElementById('client-offre').value = 'Linda BIRKLE'; // Exemple de statut client
+
+
+        // Process store transactions
+        const storeTransactions = client['5_dernieres_transactions_magasin'];
+        const storeTransactionsList = document.getElementById('store-transactions');
+        storeTransactionsList.innerHTML = '';
+        storeTransactions.forEach(transaction => {
+          const li = document.createElement('li');
+          li.textContent = `${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR)`;
+          storeTransactionsList.appendChild(li);
+
+          // Ajouter le bouton Check-in si la date de la transaction est aujourd'hui
+          if (new Date(transaction.DATE).toISOString().split('T')[0] === new Date().toISOString().split('T')[0]) {
+            const checkinButton = document.createElement('button');
+            checkinButton.className = 'checkin-button';
+            checkinButton.innerText = 'Check-in';
+            checkinButton.addEventListener('click', function() {
+              showCheckinPopin();
+            });
+            li.appendChild(checkinButton);
+          }
+        });
+
+        // Process web transactions
+        const webTransactions = client['5_dernieres_transactions_web'];
+        const webTransactionsList = document.getElementById('web-transactions');
+        webTransactionsList.innerHTML = '';
+        webTransactions.forEach(transaction => {
+          const li = document.createElement('li');
+          li.textContent = `${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR)`;
+          webTransactionsList.appendChild(li);
+        });
+
+        // Adjust the height of the transactions div based on the number of transactions
+        const transactionsDiv = document.getElementById('transactions');
+        const totalTransactions = storeTransactions.length + webTransactions.length;
+        transactionsDiv.style.height = 'auto'; // Ajustement dynamique de la hauteur
+
+        // Event listener for edit icon
+        document.getElementById('edit-icon').addEventListener('click', enableEditing);
+
+        // Show comment section
+        document.getElementById('comment-section').style.display = 'block';
+      } else {
+        document.querySelector('.details-comment-container').style.display = 'none'; // Masquer le conteneur des détails et des commentaires
+      }
+    }
+
+    function enableEditing() {
+      const firstName = document.getElementById('client-firstname');
+      const lastName = document.getElementById('client-lastname');
+      const email = document.getElementById('client-email');
+      const saveButton = document.getElementById('save-button');
+
+      if (firstName.readOnly && lastName.readOnly && email.readOnly) {
+        firstName.removeAttribute('readonly');
+        lastName.removeAttribute('readonly');
+        email.removeAttribute('readonly');
+        firstName.classList.remove('non-editable');
+        lastName.classList.remove('non-editable');
+        email.classList.remove('non-editable');
+        saveButton.style.display = 'inline-block'; // Afficher le bouton de sauvegarde
+      } else {
+        firstName.setAttribute('readonly', true);
+        lastName.setAttribute('readonly', true);
+        email.setAttribute('readonly', true);
+        firstName.classList.add('non-editable');
+        lastName.classList.add('non-editable');
+        email.classList.add('non-editable');
+        saveButton.style.display = 'none'; // Masquer le bouton de sauvegarde
+      }
+    }
+
+    document.getElementById('save-button').addEventListener('click', function() {
+      document.getElementById('confirmation-pop-in').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+
+      document.getElementById('confirm-button').addEventListener('click', saveClientDetails);
+      document.getElementById('cancel-button').addEventListener('click', hideConfirmationPopIn);
+    });
+
+    function hideConfirmationPopIn() {
+      document.getElementById('confirmation-pop-in').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+
+    async function saveClientDetails() {
+    const firstName = document.getElementById('new-firstname').value;
+      const lastName  = document.getElementById('new-lastname').value;
+      const email     = document.getElementById('new-email').value;
+      // RÉCUPÉRATION DU mobile
+      const mobile    = document.getElementById('new-mobile').value;
+
+      let url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/V4/sCVDEMO`;
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+      headers: {
+  "Content-Type": "application/json",
+  "X-Api-Key": "K1res68JTCCz5d9cmysetw==" 
+},
+          body: JSON.stringify({
+            email:     email,
+            firstName: firstName,
+            lastName:  lastName,
+            telephone:    mobile    // AJOUTÉ ICI
+          })
+        });
+        if (response.ok) {
+          // alert('Client details updated successfully!');
+          document.getElementById('client-firstname').setAttribute('readonly', true);
+          document.getElementById('client-lastname').setAttribute('readonly', true);
+          document.getElementById('client-email').setAttribute('readonly', true);
+          document.getElementById('client-firstname').classList.add('non-editable');
+          document.getElementById('client-lastname').classList.add('non-editable');
+          document.getElementById('client-email').classList.add('non-editable');
+          document.getElementById('save-button').style.display = 'none'; // Masquer le bouton de sauvegarde
+
+          // Change icon back to edit after saving
+          document.getElementById('edit-icon').src = 'https://cdn-icons-png.flaticon.com/512/1250/1250615.png'; // Change to edit icon URL
+          document.getElementById('edit-icon').removeEventListener('click', saveClientDetails);
+          document.getElementById('edit-icon').addEventListener('click', enableEditing);
+
+          // Hide the confirmation pop-in
+          hideConfirmationPopIn();
+        } else {
+          alert('Failed to update client details.');
+        }
+      } catch (error) {
+        console.error('Error updating client details:', error);
+        alert('Error updating client details.');
+      }
+    }
+
+    function clearSuggestions() {
+      document.getElementById('suggestions').innerHTML = '';
+      document.querySelector('.details-comment-container').style.display = 'none'; // Masquer le conteneur des détails et des commentaires
+    }
+
+    document.getElementById('pen-icon').addEventListener('click', function() {
+      const commentTextarea = document.getElementById('comment-textarea');
+      if (commentTextarea.style.display === 'none' || commentTextarea.style.display === '') {
+        commentTextarea.style.display = 'block';
+      } else {
+        commentTextarea.style.display = 'none';
+      }
+    });
+
+    document.getElementById('submitCommentButton').addEventListener('click', function() {
+      document.getElementById('comment-confirmation-pop-in').style.display = 'block';
+      document.getElementById('comment-overlay').style.display = 'block';
+
+      document.getElementById('comment-confirm-button').addEventListener('click', createComment);
+      document.getElementById('comment-cancel-button').addEventListener('click', hideCommentConfirmationPopIn);
+    });
+
+    function hideCommentConfirmationPopIn() {
+      document.getElementById('comment-confirmation-pop-in').style.display = 'none';
+      document.getElementById('comment-overlay').style.display = 'none';
+    }
+
+    async function createComment(commentText) {
+      const email = document.getElementById("emailInput").value;
+      const comment = document.getElementById("comment").value;
+
+      const url = "https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Commentaires/1/consentements";
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            },
+          body: JSON.stringify({
+            "Commentaires": comment,
+            "date": new Date().toISOString(),
+            "email": email,
+            "id_personnel": "John Doe Hotel Manager",
+            "iD_Consent": new Date().toISOString(),
+            "source": "Omnichanel Communication System"
+          })
+        });
+
+        if (response.ok) {
+          //alert('Comment submitted successfully!');
+          hideCommentConfirmationPopIn();
+          document.getElementById('comment-textarea').style.display = 'none';
+        } else {
+          alert('Failed to submit comment.');
+        }
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+        alert('Error submitting comment.');
+      }
+    }
+
+    async function checkin() {
+      const email = document.getElementById("emailInput").value;
+      const url = "https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Commentaires/1/consentements";
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            },
+          body: JSON.stringify({
+            "Commentaires": "Check-in confirmé",
+            "date": new Date().toISOString(),
+            "email": "quentin.ecuer@imagino.com",
+            "id_personnel": "John Doe Hotel Manager",
+            "iD_Consent": new Date().toISOString(),
+            "source": "checkin"
+          })
+        });
+
+        if (response.ok) {
+          // alert('Check-in confirmed successfully!');
+          hideCheckinPopin();
+        } else {
+          alert('Failed to confirm check-in.');
+        }
+      } catch (error) {
+        console.error('Error confirming check-in:', error);
+        alert('Error confirming check-in.');
+      }
+    }
+
+    function showCheckinPopin() {
+      document.getElementById('checkin-popin-overlay').style.display = 'block';
+      document.getElementById('checkin-popin').style.display = 'block';
+    }
+
+    function hideCheckinPopin() {
+      document.getElementById('checkin-popin-overlay').style.display = 'none';
+      document.getElementById('checkin-popin').style.display = 'none';
+    }
+
+    document.getElementById('confirm-checkin-button').addEventListener('click', function() {
+      checkin();
+    });
+
+    document.getElementById('cancel-checkin-button').addEventListener('click', function() {
+      hideCheckinPopin();
+    });
+
+    document.getElementById('add-contact-button').addEventListener('click', function() {
+      document.getElementById('contact-pop-in').style.display = 'block';
+      document.getElementById('contact-overlay').style.display = 'block';
+    });
+
+    document.getElementById('cancel-create-contact-button').addEventListener('click', function() {
+      document.getElementById('contact-pop-in').style.display = 'none';
+      document.getElementById('contact-overlay').style.display = 'none';
+    });
+
+   document.getElementById('create-contact-button').addEventListener('click', async function() {
+  const firstName = document.getElementById('new-firstname').value;
+  const lastName  = document.getElementById('new-lastname').value;
+  const email     = document.getElementById('new-email').value;
+  const mobile    = document.getElementById('new-mobile').value;
+
+  // Point d’API correct pour Account Creation
+  const url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO`;
+
   try {
-    const url = `${proxyBase}/ucdapi/Vue_client_360/V3/sCVDEMO`;
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Le spec OpenAPI pour Account Creation exige X-API-KEY
+        },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName:  lastName,
+        email:     email,
+        // Le champ attendu par le back-end est `telephone`
+        telephone: mobile
+      })
     });
-    const data = await resp.json();
-    allClients = data && data.data ? data.data : [];
-  } catch (err) {
-    console.error("Erreur chargement contacts :", err);
+
+    if (response.ok) {
+
+      const eventPayload = {
+  event_type: 'accountCreated',
+  timestamp:  new Date().toISOString(),
+  user_details: {
+    user_id:       email,                   // ou autre identifiant
+    username:      `${firstName} ${lastName}`,
+    email:         email,
+    signup_method: 'web',                   // ou mobile/app…
+    account_type:  'standard'               // ou premium…
+  },
+  device_info: {
+    app_version: navigator.appVersion || '',
+    device_type: navigator.platform   || '',
+    os:          navigator.userAgent  || ''
+  },
+  location: {
+    city:    '',  // si dispo
+    country: ''   // si dispo
   }
-  return allClients;
-}
+};
 
-/* === Filtre local insensible à la casse === */
-function filterClients(term) {
-  const s = term.toLowerCase();
-  return allClients.filter(c =>
-    (c.firstName && c.firstName.toLowerCase().includes(s)) ||
-    (c.lastName && c.lastName.toLowerCase().includes(s)) ||
-    (c.email && c.email.toLowerCase().includes(s))
-  );
-}
-
-/* === Utils UI === */
-function clearSuggestions() {
-  document.getElementById('suggestions').innerHTML = '';
-}
-
-function showHideDetails(show) {
-  document.querySelector('.details-comment-container').style.display = show ? 'flex' : 'none';
-}
-
-/* === Affichage suggestions === */
-function displaySuggestions(records) {
-  const suggestions = document.getElementById('suggestions');
-  suggestions.innerHTML = '';
-  records.slice(0, 15).forEach(record => {
-    const div = document.createElement('div');
-    div.textContent = `${record.firstName} ${record.lastName} - ${record.email}`;
-    div.addEventListener('click', () => {
-      fetchClientDetails(record.email);
-      document.getElementById('emailInput').value = record.email;
-      clearSuggestions();
-    });
-    suggestions.appendChild(div);
-  });
-}
-
-/* === Recherche temps réel === */
-document.getElementById('emailInput').addEventListener('input', async function () {
-  const term = this.value.trim();
-  if (!term) {
-    clearSuggestions();
-    showHideDetails(false);
-    return;
+// Appel API vers Imagino
+fetch('https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Creation_compte/1/creationDeCompte', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-KEY':    'K1res68JTCCz5d9cmysetw=='
+  },
+  body: JSON.stringify(eventPayload)
+})
+.then(response => {
+  if (!response.ok) {
+    console.error('Event API error:', response.status, response.statusText);
   }
-  await loadAllClients();
-  const matches = filterClients(term);
-  if (matches.length) {
-    displaySuggestions(matches);
-  } else {
-    clearSuggestions();
-    showHideDetails(false);
+})
+.catch(error => {
+  console.error('Network error calling event API:', error);
+});
+
+      // on ferme la pop-in
+      document.getElementById('contact-pop-in').style.display   = 'none';
+      document.getElementById('contact-overlay').style.display = 'none';
+      alert('Compte créé !');
+
+    } else {
+      const text = await response.text();
+      alert('Échec création contact: ' + text);
+    }
+  } catch (error) {
+    console.error('Error creating contact:', error);
+    alert('Erreur réseau lors de la création de contact.');
   }
 });
 
-/* === Récupération détails d'un client unique (transactions, etc.) === */
-async function fetchClientDetails(email) {
-  try {
-    const url = `${proxyBase}/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${encodeURIComponent(email)}`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
-    const data = await response.json();
-    processClientDetails(data);
-  } catch (err) {
-    console.error("Erreur fetch détails :", err);
-    showHideDetails(false);
-  }
-}
 
-/* === Le reste de tes fonctions (processClientDetails, enableEditing, etc.) restent inchangées === */
-/* ... Pour gagner de la place, on insère ici l'intégralité des fonctions existantes non modifiées ... */
+    // === Derniers rendez-vous ===
+// Simulation de 3 derniers rendez-vous
+const appointments = [
+  { date: "2025-04-20", location: "Boutique Paris Champs-Élysées" },
+  { date: "2025-03-15", location: "Messika Flagship Store" },
+  { date: "2025-02-05", location: "Salon du Luxe Cannes" }
+];
 
-/* === COLLER ICI le reste de ton ancien script à partir de processClientDetails(...) === */
-</script>
+const appointmentsList = document.getElementById('appointments-list');
+appointmentsList.innerHTML = '';
+appointments.forEach(appointment => {
+  const li = document.createElement('li');
+  li.textContent = `${appointment.date} - ${appointment.location}`;
+  appointmentsList.appendChild(li);
+});
 
+// Afficher les sections
+document.getElementById('appointments-section').style.display = 'block';
+document.getElementById('wishlist-section').style.display = 'block';
+
+    // Ajout des boutons Check-in pour les transactions d'aujourd'hui
+    function addCheckinButtons() {
+      const transactions = document.querySelectorAll('#store-transactions li, #web-transactions li');
+      const today = new Date().toISOString().split('T')[0];
+      transactions.forEach(transaction => {
+        const transactionDate = transaction.textContent.split(':')[0];
+        if (transactionDate === today) {
+          const checkinButton = document.createElement('button');
+          checkinButton.className = 'checkin-button';
+          checkinButton.innerText = 'Check-in';
+          checkinButton.addEventListener('click', function() {
+            showCheckinPopin();
+          });
+          transaction.appendChild(checkinButton);
+        }
+      });
+    }
+
+    // Appeler la fonction après le chargement des transactions
+    setTimeout(addCheckinButtons, 500); // Attendre un peu que les transactions soient chargées
+
+  </script>
 </body>
 </html>
