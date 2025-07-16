@@ -467,7 +467,7 @@ p input[type="text"] {
     });
 /* MODIFIER FONCTION DE RECHERCHE : ADAPATER URL DE ENDPOINT API + API KEY */
     async function fetchRecords(email) {
-      let url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email}`;
+      let url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email};
   
 
       try {
@@ -497,7 +497,7 @@ p input[type="text"] {
       suggestions.innerHTML = '';
       records.forEach(record => {
         const div = document.createElement('div');
-        div.textContent = `${record.firstName} ${record.lastName} - ${record.email}`;
+        div.textContent = ${record.firstName} ${record.lastName} - ${record.email};
         div.addEventListener('click', () => {
           fetchClientDetails(record.email);
           document.getElementById('emailInput').value = record.email;
@@ -508,7 +508,7 @@ p input[type="text"] {
     }
 
     async function fetchClientDetails(email) {
-      let url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}`; // remplacer endpoint API
+      let url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}; // remplacer endpoint API
 
       try {
         const response = await fetch(url, {
@@ -540,14 +540,13 @@ p input[type="text"] {
         document.getElementById('client-RFM').value = 'VIP Client'; // Exemple de statut client
         document.getElementById('client-offre').value = 'Linda BIRKLE'; // Exemple de statut client
 
-
         // Process store transactions
         const storeTransactions = client['5_dernieres_transactions_magasin'];
         const storeTransactionsList = document.getElementById('store-transactions');
         storeTransactionsList.innerHTML = '';
         storeTransactions.forEach(transaction => {
           const li = document.createElement('li');
-          li.textContent = `${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR)`;
+          li.textContent = ${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR);
           storeTransactionsList.appendChild(li);
 
           // Ajouter le bouton Check-in si la date de la transaction est aujourd'hui
@@ -568,7 +567,7 @@ p input[type="text"] {
         webTransactionsList.innerHTML = '';
         webTransactions.forEach(transaction => {
           const li = document.createElement('li');
-          li.textContent = `${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR)`;
+          li.textContent = ${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR);
           webTransactionsList.appendChild(li);
         });
 
@@ -632,7 +631,7 @@ p input[type="text"] {
       // RÉCUPÉRATION DU mobile
       const mobile    = document.getElementById('new-mobile').value;
 
-      let url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/V4/sCVDEMO`;
+      let url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/V4/sCVDEMO;
 
       try {
         const response = await fetch(url, {
@@ -803,7 +802,7 @@ p input[type="text"] {
   const mobile    = document.getElementById('new-mobile').value;
 
   // Point d’API correct pour Account Creation
-  const url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO`;
+  const url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO;
 
   try {
   const response = await fetch(url, {
@@ -827,7 +826,7 @@ p input[type="text"] {
   timestamp:  new Date().toISOString(),
   user_details: {
     user_id:       email,                   // ou autre identifiant
-    username:      `${firstName} ${lastName}`,
+    username:      ${firstName} ${lastName},
     email:         email,
     signup_method: 'web',                   // ou mobile/app…
     account_type:  'standard'               // ou premium…
@@ -876,7 +875,6 @@ fetch('https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Creati
   }
 });
 
-
     // === Derniers rendez-vous ===
 // Simulation de 3 derniers rendez-vous
 const appointments = [
@@ -889,72 +887,10 @@ const appointmentsList = document.getElementById('appointments-list');
 appointmentsList.innerHTML = '';
 appointments.forEach(appointment => {
   const li = document.createElement('li');
-  li.textContent = `${appointment.date} - ${appointment.location}`;
+  li.textContent = ${appointment.date} - ${appointment.location};
   appointmentsList.appendChild(li);
 });
-// Ouvrir la pop-in d'inscription
-document.getElementById('add-contact-button').addEventListener('click', function () {
-  document.getElementById('contact-pop-in').style.display = 'block';
-  document.getElementById('contact-overlay').style.display = 'block';
-});
 
-// Fermer la pop-in
-document.getElementById('cancel-create-contact-button').addEventListener('click', function () {
-  document.getElementById('contact-pop-in').style.display = 'none';
-  document.getElementById('contact-overlay').style.display = 'none';
-});
-
-// Créer le contact
-document.getElementById('create-contact-button').addEventListener('click', async function () {
-  const firstName = document.getElementById('new-firstname').value;
-  const lastName  = document.getElementById('new-lastname').value;
-  const email     = document.getElementById('new-email').value;
-  const mobile    = document.getElementById('new-mobile').value;
-
-  if (!firstName || !lastName || !email) {
-    alert("Merci de remplir tous les champs obligatoires.");
-    return;
-  }
-
-  const url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO`;
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        telephone: mobile
-      })
-    });
-
-    if (response.ok) {
-      alert("Client créé avec succès !");
-      // Fermer la pop-in
-      document.getElementById('contact-pop-in').style.display = 'none';
-      document.getElementById('contact-overlay').style.display = 'none';
-
-      // Optionnel : reset les champs
-      document.getElementById('new-firstname').value = '';
-      document.getElementById('new-lastname').value  = '';
-      document.getElementById('new-email').value     = '';
-      document.getElementById('new-mobile').value    = '';
-
-    } else {
-      const error = await response.text();
-      alert("Erreur lors de la création : " + error);
-    }
-
-  } catch (err) {
-    console.error(err);
-    alert("Erreur réseau");
-  }
-});
 // Afficher les sections
 document.getElementById('appointments-section').style.display = 'block';
 document.getElementById('wishlist-section').style.display = 'block';
