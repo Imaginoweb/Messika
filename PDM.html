@@ -20,8 +20,7 @@
     }
 
     .ipad-frame {
-      background: #0970e6;
-              background-color: #0970e6;
+      background: black;
       width: 1366px;
       height: 1024px;
       display: flex;
@@ -370,11 +369,11 @@ p input[type="text"] {
 <div class="content">
 <div class="user-info">
 <p style="margin-right: 10px; font-weight: bold;">Logged in as</p>
-<p style="margin-right: 10px;">Linda BELGIUM</p>
-<p style="margin-right: 10px;">CAREFFOUR BELGIQUE</p>
+<p style="margin-right: 10px;">Linda BIRKLE</p>
+<p style="margin-right: 10px;">MESSIKA HONORE</p>
 </div>
 <!-- MODIFIER URL IMAGE CENTRAL BARRE RECHERCHER -->
-<img alt="Logo PDM" class="logo" src="https://cdn.worldvectorlogo.com/logos/carrefour-c.svg"/>
+<img alt="Logo PDM" class="logo" src="https://www.auberi.fr//img/m/9.jpg"/>
 <div style="display: flex; align-items: center;">
 <input id="emailInput" placeholder="Enter email" type="text"/>
 <button class="add-contact" id="add-contact-button">+</button>
@@ -397,6 +396,7 @@ p input[type="text"] {
 <p><strong>Status fidélité:</strong> <input class="editable non-editable" id="client-status" readonly="" type="text"/></p>
 <p><strong>Date de naissance:</strong><input class="editable non-editable" id="client-seller" readonly="" type="text" value="27 avril 1996"/></p>
 <p><strong>Classification client :</strong><input class="editable non-editable" id="client-RFM" readonly="" type="text"/></p>
+<p><strong>Vendeur attitré : </strong><input class="editable non-editable" id="client-offre" readonly="" type="text" value="Linda BIRKLE"/></p>
 <button id="save-button">Update contact details</button>
 <div id="transactions">
 <h2>Historique d'achat</h2>
@@ -417,6 +417,19 @@ p input[type="text"] {
 <div id="comment-textarea">
 <textarea id="comment" placeholder="Enter your comment"></textarea>
 <button id="submitCommentButton">Submit Comment</button>
+</div><!-- Section Derniers Rendez-vous -->
+<div id="appointments-section" style="display: none; width: 100%; margin-top: 20px;">
+<h2 style="color: #000000;">Derniers Rendez-vous</h2>
+<ul class="transaction-list" id="appointments-list"></ul>
+</div>
+<!-- Section Wishlist -->
+<div id="wishlist-section" style="display: none; width: 100%; margin-top: 20px; text-align: center;">
+<h2 style="color: #000000;">Produit souhaité</h2>
+<div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px;"><img src="Mathilde.jpg" href="https://www.messika.com/fr/bague-diamant-or-jaune-move-classique-04705-yg" style="max-width: 200px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"/><a href="https://www.messika.com/fr/bague-diamant-or-jaune-move-classique-04705-yg" target="_blank"><img src="moveone.png" style="max-width: 200px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"/></a></div></div>
+</div>
+</div>
+</div>
+</div>
 <!-- Pop-in de confirmation -->
 <div class="overlay" id="overlay"></div>
 <div class="pop-in" id="confirmation-pop-in">
@@ -467,7 +480,7 @@ p input[type="text"] {
     });
 /* MODIFIER FONCTION DE RECHERCHE : ADAPATER URL DE ENDPOINT API + API KEY */
     async function fetchRecords(email) {
-      let url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email};
+      let url = `https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO?email=${email}`;
   
 
       try {
@@ -475,7 +488,7 @@ p input[type="text"] {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            // API KEY
+            "X-API-KEY": "K1res68JTCCz5d9cmysetw==" // API KEY
           }
         });
         const data = await response.json();
@@ -497,7 +510,7 @@ p input[type="text"] {
       suggestions.innerHTML = '';
       records.forEach(record => {
         const div = document.createElement('div');
-        div.textContent = ${record.firstName} ${record.lastName} - ${record.email};
+        div.textContent = `${record.firstName} ${record.lastName} - ${record.email}`;
         div.addEventListener('click', () => {
           fetchClientDetails(record.email);
           document.getElementById('emailInput').value = record.email;
@@ -508,13 +521,13 @@ p input[type="text"] {
     }
 
     async function fetchClientDetails(email) {
-      let url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}; // remplacer endpoint API
+      let url = `https://retaildemo1.poc.imagino.com/ucdapi/Vue_client_360/V3/sCVDEMO?exact_email=${email}`; // remplacer endpoint API
 
       try {
         const response = await fetch(url, {
           method: "GET",
           headers: {
-            // API KEY
+            "X-API-KEY": "K1res68JTCCz5d9cmysetw==" // API KEY
           }
         });
         const data = await response.json();
@@ -540,13 +553,14 @@ p input[type="text"] {
         document.getElementById('client-RFM').value = 'VIP Client'; // Exemple de statut client
         document.getElementById('client-offre').value = 'Linda BIRKLE'; // Exemple de statut client
 
+
         // Process store transactions
         const storeTransactions = client['5_dernieres_transactions_magasin'];
         const storeTransactionsList = document.getElementById('store-transactions');
         storeTransactionsList.innerHTML = '';
         storeTransactions.forEach(transaction => {
           const li = document.createElement('li');
-          li.textContent = ${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR);
+          li.textContent = `${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR)`;
           storeTransactionsList.appendChild(li);
 
           // Ajouter le bouton Check-in si la date de la transaction est aujourd'hui
@@ -567,7 +581,7 @@ p input[type="text"] {
         webTransactionsList.innerHTML = '';
         webTransactions.forEach(transaction => {
           const li = document.createElement('li');
-          li.textContent = ${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR);
+          li.textContent = `${transaction.DATE}: ${transaction.DESCRIPTION} (${transaction.AMOUNT} EUR)`;
           webTransactionsList.appendChild(li);
         });
 
@@ -631,7 +645,7 @@ p input[type="text"] {
       // RÉCUPÉRATION DU mobile
       const mobile    = document.getElementById('new-mobile').value;
 
-      let url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/V4/sCVDEMO;
+      let url = `https://retaildemo1.poc.imagino.com/ucdapi/Account_creation/V4/sCVDEMO`;
 
       try {
         const response = await fetch(url, {
@@ -704,14 +718,15 @@ p input[type="text"] {
       const email = document.getElementById("emailInput").value;
       const comment = document.getElementById("comment").value;
 
-      const url = "https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Commentaires/1/consentements";
+      const url = "https://demosales.poc.imagino.com/ucdapi/Commentaires/1/consentements";
 
       try {
         const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            },
+            "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
+          },
           body: JSON.stringify({
             "Commentaires": comment,
             "date": new Date().toISOString(),
@@ -737,14 +752,15 @@ p input[type="text"] {
 
     async function checkin() {
       const email = document.getElementById("emailInput").value;
-      const url = "https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Commentaires/1/consentements";
+      const url = "https://demosales.poc.imagino.com/ucdapi/Commentaires/1/consentements";
 
       try {
         const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            },
+            "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
+          },
           body: JSON.stringify({
             "Commentaires": "Check-in confirmé",
             "date": new Date().toISOString(),
@@ -802,7 +818,7 @@ p input[type="text"] {
   const mobile    = document.getElementById('new-mobile').value;
 
   // Point d’API correct pour Account Creation
-  const url = https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO;
+  const url = `https://retaildemo1.poc.imagino.com/ucdapi/Account_creation/4/sCVDEMO`;
 
   try {
     const response = await fetch(url, {
@@ -810,12 +826,13 @@ p input[type="text"] {
       headers: {
         "Content-Type": "application/json",
         // Le spec OpenAPI pour Account Creation exige X-API-KEY
-        },
+        "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
+      },
       body: JSON.stringify({
         firstName: firstName,
         lastName:  lastName,
         email:     email,
-        // Le champ attendu par le back-end est telephone
+        // Le champ attendu par le back-end est `telephone`
         telephone: mobile
       })
     });
@@ -827,7 +844,7 @@ p input[type="text"] {
   timestamp:  new Date().toISOString(),
   user_details: {
     user_id:       email,                   // ou autre identifiant
-    username:      ${firstName} ${lastName},
+    username:      `${firstName} ${lastName}`,
     email:         email,
     signup_method: 'web',                   // ou mobile/app…
     account_type:  'standard'               // ou premium…
@@ -844,7 +861,7 @@ p input[type="text"] {
 };
 
 // Appel API vers Imagino
-fetch('https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Creation_compte/1/creationDeCompte', {
+fetch('https://retaildemo1.poc.imagino.com/ucdapi/Creation_compte/1/creationDeCompte', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -876,6 +893,7 @@ fetch('https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Creati
   }
 });
 
+
     // === Derniers rendez-vous ===
 // Simulation de 3 derniers rendez-vous
 const appointments = [
@@ -888,7 +906,7 @@ const appointmentsList = document.getElementById('appointments-list');
 appointmentsList.innerHTML = '';
 appointments.forEach(appointment => {
   const li = document.createElement('li');
-  li.textContent = ${appointment.date} - ${appointment.location};
+  li.textContent = `${appointment.date} - ${appointment.location}`;
   appointmentsList.appendChild(li);
 });
 
