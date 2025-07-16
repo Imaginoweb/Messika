@@ -892,7 +892,69 @@ appointments.forEach(appointment => {
   li.textContent = `${appointment.date} - ${appointment.location}`;
   appointmentsList.appendChild(li);
 });
+// Ouvrir la pop-in d'inscription
+document.getElementById('add-contact-button').addEventListener('click', function () {
+  document.getElementById('contact-pop-in').style.display = 'block';
+  document.getElementById('contact-overlay').style.display = 'block';
+});
 
+// Fermer la pop-in
+document.getElementById('cancel-create-contact-button').addEventListener('click', function () {
+  document.getElementById('contact-pop-in').style.display = 'none';
+  document.getElementById('contact-overlay').style.display = 'none';
+});
+
+// Créer le contact
+document.getElementById('create-contact-button').addEventListener('click', async function () {
+  const firstName = document.getElementById('new-firstname').value;
+  const lastName  = document.getElementById('new-lastname').value;
+  const email     = document.getElementById('new-email').value;
+  const mobile    = document.getElementById('new-mobile').value;
+
+  if (!firstName || !lastName || !email) {
+    alert("Merci de remplir tous les champs obligatoires.");
+    return;
+  }
+
+  const url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        telephone: mobile
+      })
+    });
+
+    if (response.ok) {
+      alert("Client créé avec succès !");
+      // Fermer la pop-in
+      document.getElementById('contact-pop-in').style.display = 'none';
+      document.getElementById('contact-overlay').style.display = 'none';
+
+      // Optionnel : reset les champs
+      document.getElementById('new-firstname').value = '';
+      document.getElementById('new-lastname').value  = '';
+      document.getElementById('new-email').value     = '';
+      document.getElementById('new-mobile').value    = '';
+
+    } else {
+      const error = await response.text();
+      alert("Erreur lors de la création : " + error);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Erreur réseau");
+  }
+});
 // Afficher les sections
 document.getElementById('appointments-section').style.display = 'block';
 document.getElementById('wishlist-section').style.display = 'block';
