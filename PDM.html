@@ -806,20 +806,19 @@ p input[type="text"] {
   const url = `https://rough-cloud-09a3.francois-imagino.workers.dev/proxy/ucdapi/Account_creation/4/sCVDEMO`;
 
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // Le spec OpenAPI pour Account Creation exige X-API-KEY
-        },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName:  lastName,
-        email:     email,
-        // Le champ attendu par le back-end est `telephone`
-        telephone: mobile
-      })
-    });
+  const response = await fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-KEY": "K1res68JTCCz5d9cmysetw=="
+  },
+  body: JSON.stringify({
+    firstName: firstName,
+    lastName:  lastName,
+    email:     email,
+    telephone: mobile
+  })
+});
 
     if (response.ok) {
 
@@ -904,6 +903,8 @@ document.getElementById('wishlist-section').style.display = 'block';
       const today = new Date().toISOString().split('T')[0];
       transactions.forEach(transaction => {
         const transactionDate = transaction.textContent.split(':')[0];
+
+          
         if (transactionDate === today) {
           const checkinButton = document.createElement('button');
           checkinButton.className = 'checkin-button';
